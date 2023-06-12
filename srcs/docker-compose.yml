@@ -1,50 +1,70 @@
-version:  "3.9"
+version: '3.3'
+
 
 services:
+  mariadb:
+    image: mariadb
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    restart: always
+    env_file:
+      - env.env
+    volumes:
+      - db_data:/home/tkempf-e/data
+    ports: 
+      - 3306:3306
+    networks:
+      - network
+  nginx: 
+    image: nginx
+    depends_on: 
+      - wordpress
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    restart: always
+    ports:
+      - 443:443
+    volumes:
+      - app:/var/www/html/wordpress
+    networks:
+      - network
+
   wordpress:
+    image: wordpress
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    depends_on: 
+      - mariadb
     restart: always
     container_name: wordpress
-    build: ./requirements/wordpress
-    ports:
-      - ":9000"
+    env_file:
+      - env.env
     volumes:
-      - /home/tkempf-e/data/wordpress:/var/www/html
+      - app:/var/www/html/wordpress
+    ports: 
+      - 9000:9000
     networks:
-      - inception-net
-      - inception-net2
+      - network
 
-  nginx:
-    restart: always
-    container_name: nginx
-    build: ./requirements/nginx
-    depends_on:
-      - wordpress
-      - mariadb
-    ports:
-      - "443:443"
-    volumes:
-      - /home/tkempf-e/data/wordpress:/var/www/html
-    networks:
-      - inception-net
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
-
-  mariadb:
-    restart: always
-    container_name: mariadb
-    build: ./requirements/mariadb
-    ports:
-      - ":3306"
-    networks:
-      - inception-net2
-    volumes:
-      - /home/tkempf-e/data/db:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+volumes:
+  db_data: 
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/tkempf-e/data/data
+      o: bind
+  app: 
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/tkempf-e/data/app
+      o: bind
 
 networks:
-  inception-net:
-  inception-net2:
+  network:
+    driver: bridge 

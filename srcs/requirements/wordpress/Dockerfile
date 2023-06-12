@@ -1,21 +1,21 @@
-FROM	alpine:3.16
-RUN	apk update; \
-	apk add openrc; \
-	apk add php8 \
-	php8-fpm \
-	php8-common \
-	php8-mysqli \
-	php8-curl \
-	php8-fileinfo \
-	php8-json \
-	php8-mbstring \
-	php8-xml \
-	php8-zip \
-	php8-gd \
-	php8-soap \
-	php8-pdo;
-
-COPY	./conf/www.conf /etc/php8/php-fpm.d/www.conf
-COPY	./conf/php.ini /etc/php8/php.ini
-
-CMD	php-fpm8 -F
+FROM debian:buster
+WORKDIR /var/www/html
+RUN apt-get update \
+		&& apt-get -y install php7.3 php7.3-fpm php7.3-mysql default-mysql-client wget\ 
+		&& wget https://wordpress.org/wordpress-6.1.1.tar.gz \
+		&& wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+		&& chmod +x wp-cli.phar \
+		&& mv wp-cli.phar /usr/local/bin/wp \
+		&& tar -xvf  wordpress-6.1.1.tar.gz -C /var/www/html/ \
+		&& rm wordpress-6.1.1.tar.gz 
+WORKDIR /var/www/html/wordpress
+RUN chown -R www-data:www-data * \
+		&& chmod -R 755 * \
+		&& rm	wp-config-sample.php
+WORKDIR /run/php
+ADD conf/php-fpm.conf /etc/php/7.3/fpm
+ADD conf/www.conf /etc/php/7.3/fpm/pool.d
+WORKDIR /home
+COPY /conf/wp-config.php .
+COPY /tools/script.sh .
+ENTRYPOINT ["/bin/sh","script.sh"]
