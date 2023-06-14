@@ -12,7 +12,7 @@ services:
     env_file:
       - env.env
     volumes:
-      - db_data:/home/tkempf-e/data
+      - db_data:/home/tkempf/data
     ports: 
       - 3306:3306
     networks:
@@ -56,13 +56,13 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/tkempf-e/data/data
+      device: /home/tkempf/data/data
       o: bind
   app: 
     driver: local
     driver_opts:
       type: none
-      device: /home/tkempf-e/data/app
+      device: /home/tkempf/data/app
       o: bind
 
 networks:

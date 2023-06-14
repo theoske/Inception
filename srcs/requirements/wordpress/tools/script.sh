@@ -11,7 +11,7 @@ if [ ! -f "$WORDPRESS_DIR/wp-config.php" ]; then
 		mv /home/wp-config.php /var/www/html/wordpress 
 		wp	--allow-root \
 		--path=/var/www/html/wordpress/ core install \
-		--url=tkempf-e.42.fr \
+		--url=tkempf.42.fr \
 		--title=$WORDPRESS_WEBSITE_TITLE \
 		--admin_user=$WORDPRESS_ADMIN \
 		--admin_password=$WORDPRESS_ADMIN_PASSWORD \

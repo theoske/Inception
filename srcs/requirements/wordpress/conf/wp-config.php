@@ -24,7 +24,7 @@
 define( 'DB_NAME', 'wpdb');
 
 /** Database username */
-define( 'DB_USER', 'tkempf-e' );
+define( 'DB_USER', 'tkempf' );
 
 /** Database password */
 define( 'DB_PASSWORD', 'ptx-4789?sa' );
